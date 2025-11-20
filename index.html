@@ -1,0 +1,948 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Makanan Khas Jawa Timur — Rekomendasi Lokal</title>
+<meta name="description" content="Deteksi lokasi & rekomendasi makanan khas Jawa Timur — sejarah, asal, bahan, foto.">
+
+<style>
+  :root{
+    --sepia:#704214;
+    --brown:#5a3a1e;
+    --brown-dark:#3c2714;
+    --gold:#c9a063;
+    --ivory:#fffaf0;
+    -*-card-bg:#fff;
+    --mute,d:#6b6b6b;
+    --glass: rgba(255,255,255,0.85);
+    --radius:16px;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+
+  body{
+    margin:0;
+    background-color:#faf4ec;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(112,66,20,0.06) 0, transparent 6%),
+      radial-gradient(circle at 80% 90%, rgba(185,140,85,0.05) 0, transparent 10%),
+      linear-gradient(180deg, rgba(245,236,224,0.6), rgba(255,255,255,0.75));
+    color:#222;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  header{
+  display:flex;
+  gap:16px;
+  align-items:center;
+  padding:28px;
+
+  /* Gambar header */
+  background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOsNHT80Bwp08-kyZjnRvFH45mnkd7knqfwQ34CsCDOgcI3TVYsiCC-fI&s=10"); /* GANTI LINK SESUAI GAMBAR */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  color:var(--ivory);
+  box-shadow: 0 6px 30px rgba(90,58,30,0.25);
+
+  /* Tambahkan overlay biar teks tetap terbaca */
+  position:relative;
+}
+header::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.45); /* overlay hitam transparan */
+  backdrop-filter: blur(1px);
+}
+header * {
+  position:relative; /* penting supaya gak ketutup overlay */
+}
+.logo {
+  width:82px;
+  height:82px;
+  border-radius:14px;
+  overflow:hidden; /* biar fotonya ikut rounded */
+  border:2px solid rgba(255,255,255,0.3);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+}
+
+.logo img {
+  width:100%;
+  height:100%;
+  object-fit:cover; /* biar tidak gepeng */
+}
+
+  header h1{
+    font-size:20px;
+    margin:0;
+    letter-spacing:0.4px;
+  }
+  header p{ margin:0.2rem 0 0; font-size:13px; opacity:0.95; }
+
+  .container{
+    max-width:1200px;
+    margin:24px auto;
+    padding:16px;
+  }
+
+  .controls{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+  }
+
+  .btn {
+    background: linear-gradient(180deg,var(--gold), #b48b54);
+    border:none;
+    color:#3a1f00;
+    padding:10px 14px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:600;
+    box-shadow: 0 6px 18px rgba(167,120,30,0.22);
+  }
+
+  .btn.secondary{
+    background: transparent;
+    color:var(--brown);
+    border: 2px solid rgba(90,58,30,0.25);
+    box-shadow:none;
+  }
+
+  select, input[type="search"]{
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid rgba(0,0,0,0.08);
+    min-width:220px;
+    background:var(--glass);
+    font-size:14px;
+  }
+
+  .grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+    gap:18px;
+    margin-top:8px;
+  }
+
+  .card{
+    background:linear-gradient(180deg, var(--card-bg), #fffdf9);
+    border-radius:12px;
+    padding:12px;
+    box-shadow: 0 10px 30px rgba(21,21,21,0.06);
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    min-height:260px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .card img{
+    width:100%;
+    height:150px;
+    object-fit:cover;
+    border-radius:10px;
+  }
+
+  .tag{
+    position:absolute;
+    top:12px;
+    left:12px;
+    background:rgba(90,58,30,0.95);
+    color:var(--ivory);
+    padding:6px 10px;
+    border-radius:10px;
+    font-weight:700;
+    font-size:13px;
+    box-shadow: 0 6px 14px rgba(90,58,30,0.2);
+  }
+
+  .card h3{
+    margin:0; font-size:18px;
+    color:var(--brown-dark);
+  }
+
+  .meta{ font-size:13px; color:var(--muted); margin-bottom:6px;}
+  .desc{ font-size:14px; color:#333; flex:1; }
+
+  .card .actions{
+    display:flex;
+    gap:8px;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:6px;
+  }
+
+  footer{
+    text-align:center;
+    color:var(--muted);
+    margin:28px 0 120px;
+    font-size:13px;
+  }
+
+  /* modal */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,0.45); display:none; align-items:center; justify-content:center; z-index:60;
+  }
+  .modal{
+    background:linear-gradient(180deg, #fff, #fffcf7);
+    border-radius:16px;
+    width:min(920px,96%);
+    max-height:90vh;
+    overflow:auto;
+    box-shadow: 0 30px 90px rgba(20,20,20,0.4);
+    padding:18px;
+  }
+  .modal .close{
+    background:transparent; border:0; font-weight:700; color:var(--brown-dark); font-size:18px; cursor:pointer;
+  }
+
+  @media (max-width:520px){
+    header{ padding:18px; gap:10px; }
+    .logo{ width:64px; height:64px; font-size:14px; border-radius:12px; }
+    header h1{ font-size:16px; }
+    .controls{ gap:8px; }
+  }
+
+  .hero-accent{
+    margin-top:12px;
+    height:60px;
+    background:
+      linear-gradient(90deg, rgba(90,58,30,0.06), rgba(185,140,85,0.05));
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    padding:10px 14px;
+    gap:12px;
+  }
+  .badge{
+    background:linear-gradient(180deg,var(--brown), var(--brown-dark));
+    color:var(--ivory);
+    padding:6px 10px;
+    border-radius:10px;
+    font-weight:700;
+    box-shadow:0 6px 18px rgba(90,58,30,0.14);
+  }
+
+</style>
+</head>
+<body>
+<header>
+<div class="logo">
+  <img src="https://i.pinimg.com/474x/f7/ae/13/f7ae1392a74f7b1db51ebd778f59c4a2.jpg" alt="Logo" />
+  </div>
+  <div>
+    <h1>Makanan Khas Jawa Timur</h1>
+    <p>Deteksi lokasi & rekomendasi makanan lokal — cerita, asal, bahan, foto.</p>
+  </div>
+</header>
+
+<main class="container" role="main">
+  <div class="hero-accent" aria-hidden="false">
+    <div class="badge">Temukan Rasa Lokal</div>
+    <div style="flex:1; color:#3d2a2a; font-weight:600;">Biarkan situs ini mendeteksi lokasi kamu untuk rekomendasi makanan terdekat.</div>
+    <div style="font-size:13px;color:var(--muted)"></div>
+  </div>
+
+  <div class="controls" style="margin-top:12px;">
+    <button id="detectBtn" class="btn" title="Deteksi lokasi saya sekarang">Deteksi Lokasi Sekarang</button>
+    <button id="nearBtn" class="btn secondary" title="Tampilkan hasil untuk lokasi terdekat (jika sudah dideteksi)">Tampilkan Terdekat</button>
+
+    <label for="citySelect" style="display:inline-block;">
+      <select id="citySelect" aria-label="Pilih kota" title="Pilih kota (termasuk kota kecil)">
+        <option value="">— Pilih kota / kabupaten (atau cari) —</option>
+      </select>
+    </label>
+
+    <input id="searchCity" type="search" placeholder="Cari kota (mis. Madiun, Tulungagung...)" aria-label="Cari kota">
+  </div>
+
+  <div id="status" style="font-size:14px;color:var(--muted); margin-bottom:8px;">
+    Lokasi belum terdeteksi.
+  </div>
+
+  <div id="resultsInfo" style="margin-bottom:10px; color:var(--muted)"></div>
+
+  <section id="cards" class="grid" aria-live="polite">
+    <!-- cards injected here -->
+  </section>
+
+  <footer>
+    Dibuat dengan kerja keras dan sentuhan Jawa Timur .
+  </footer>
+</main>
+
+<!-- Modal detail -->
+<div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+  <div class="modal" role="document">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+      <div>
+        <h2 id="modalTitle" style="margin:0;color:var(--maroon)"></h2>
+        <div id="modalSub" style="color:var(--muted); font-size:13px; margin-top:6px;"></div>
+      </div>
+      <div>
+        <button class="close" id="closeModal">× Tutup</button>
+      </div>
+    </div>
+
+    <hr style="border:none; height:1px; background:#eee; margin:12px 0;">
+    <img id="modalImage" src="" alt="" style="width:100%; height:360px; object-fit:cover; border-radius:10px; box-shadow:0 10px 36px rgba(0,0,0,0.12)">
+    <div style="display:grid; grid-template-columns: 1fr 300px; gap:18px; margin-top:12px;">
+      <div>
+        <h3 style="margin:0 0 6px 0">Deskripsi Singkat</h3>
+        <p id="modalDesc" style="margin-top:0; color:#333"></p>
+
+        <h3 style="margin-top:10px">Sejarah / Asal-usul</h3>
+        <p id="modalHistory" style="margin-top:0; color:#333"></p>
+
+        <h3 style="margin-top:10px">Bahan Utama</h3>
+        <p id="modalIngredients" style="margin-top:0; color:#333"></p>
+      </div>
+
+      <aside style="background:#fff8ef; border-radius:10px; padding:12px;">
+        <h4 style="margin:0 0 6px 0; color:var(--maroon)">Info Cepat</h4>
+        <p id="modalQuick" style="margin:0; color:#3e2b2b; font-size:14px"></p>
+      </aside>
+    </div>
+  </div>
+</div>
+<script>
+const towns = [
+  { name: "Madiun", lat: -7.6300, lon: 111.5238 },
+  { name: "Ponorogo", lat: -7.8683, lon: 111.4689 },
+  { name: "Tulungagung", lat: -8.0679, lon: 111.9002 },
+  { name: "Blitar", lat: -8.0856, lon: 112.1512 },
+  { name: "Kediri", lat: -7.8667, lon: 112.0017 },
+  { name: "Jombang", lat: -7.5468, lon: 112.2389 },
+  { name: "Nganjuk", lat: -7.5860, lon: 111.9190 },
+  { name: "Bojonegoro", lat: -7.1546, lon: 111.5196 },
+  { name: "Banyuwangi", lat: -8.2181, lon: 114.3693 },
+  { name: "Sumenep", lat: -6.9193, lon: 113.8649 },
+  { name: "Surabaya", lat: -7.2575, lon: 112.7521 },
+  { name: "Malang", lat: -7.9797, lon: 112.6304 },
+  { name: "Pasuruan", lat: -7.6456, lon: 112.8960 },
+  { name: "Probolinggo", lat: -7.7619, lon: 113.2050 },
+  { name: "Lumajang", lat: -8.1104, lon: 113.2320 },
+  { name: "Sidoarjo", lat: -7.4465, lon: 112.7186 },
+  { name: "Pacitan", lat: -8.2118, lon: 111.1386 },
+  { name: "Ngawi", lat: -7.4030, lon: 111.4042 },
+  { name: "Bondowoso", lat: -7.9688, lon: 114.2256 },
+  { name: "Lamongan", lat: -7.1187, lon: 112.4166 },
+  { name: "Jember", lat: -8.1667, lon: 113.7000 },
+  { name: "Magetan", lat: -7.65, lon: 111.3333 }, 
+  { name: "Mojokerto", lat: -7.4667, lon: 112.4333 },
+  { name: "Pamekasan", lat: -6.85, lon: 113.45 },
+  { name: "Sampang", lat: -7.05, lon: 113.25 },
+  { name: "Situbondo", lat: -7.7014, lon: 114.0044 },
+  { name: "Trenggalek", lat: -8.05, lon: 111.7167 }, 
+  { name: "Tuban", lat: -6.90, lon: 112.05 },
+  { name: "Gresik", lat: -7.1652, lon: 112.65199 }, 
+];
+
+const foods = [
+  {
+    id: "pecel_madiun",
+    name: "Nasi Pecel Madiun",
+    origin: "Madiun",
+    shortDesc: "Nasi pecel khas Madiun: sayuran rebus dengan sambal kacang yang khas.",
+    history: "Berasal dari Jawa Tengah & Jawa Timur, terutama Madiun. Pecel sudah ada sejak masa kerajaan Jawa kuno, digunakan sebagai hidangan sederhana rakyat berupa sayuran rebus dengan sambal kacang.",
+    ingredients: "Sayuran rebus, sambal kacang, nasi, kerupuk.",
+    image: "https://cdn.rri.co.id/berita/Surabaya/o/1727658322975-IMG_9009/16rmgzrjrup58wn.jpeg",
+  },
+  {
+    id: "brem_madiun",
+    name: "Brem Madiun",
+    origin: "Madiun",
+    shortDesc: "Kue fermentasi tradisional dari beras ketan dengan tekstur manis dan lembut.",
+    history: "Makanan fermentasi dari beras ketan yang sudah dikenal sejak era Kerajaan Majapahit. Dibuat dari sari tape yang dikeringkan.",
+    ingredients: "Beras ketan, ragi lokal, gula.",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRw2KhZbzXL2OQSf6WoxKCDmRjjDOeGaZ1dYBMZhiioonGL4XQflKQB2GU&s=10",
+  },
+  {
+    id: "rawon_ponorogo",
+    name: "Rawon",
+    origin: "Ponorogo",
+    shortDesc: "Sup daging hitam khas Jawa Timur dengan kluwek.",
+    history: "Sup daging hitam asal Jawa Timur sejak masa Kerajaan Jawa kuno. Warna hitam berasal dari kluwek.",
+    ingredients: "Daging sapi, kluwek, bawang, rempah.",
+    image: "https://asset.kompas.com/crops/RAkLCVPTiwC_qhG4W4wb1dN-uX4=/0x12:983x667/1200x800/data/photo/2023/11/17/6556dc6484a92.jpg",
+  },
+  {
+    id: "sate_ponorogo",
+    name: "Sate Ponorogo",
+    origin: "Ponorogo",
+    shortDesc: "Sate khas Ponorogo dengan sambal kacang gurih.",
+    history: "Sate ayam khas Ponorogo dengan irisan daging panjang dan dimarinasi bumbu kacang sejak awal. Diperkirakan muncul pada abad ke-19.",
+    ingredients: "Daging ayam/sapi, bumbu kacang.",
+    image: "https://www.finnafood.com/blog/wp-content/uploads/2024/07/sate-ponorogo.jpg",
+  },
+  {
+    id: "rujak_cingur",
+    name: "Rujak Cingur",
+    origin: "Surabaya",
+    shortDesc: "Campuran buah, sayur, dan cingur dengan petis.",
+    history: "Hidangan Surabaya sejak era kolonial, menggunakan cingur (hidung sapi). Bumbu petis membuat rasanya khas.",
+    ingredients: "Cingur, buah, sayur, petis.",
+    image: "https://awsimages.detik.net.id/community/media/visual/2021/03/30/sejarah-rujak-cingur-2.jpeg?w=960",
+  },
+  {
+    id: "soto_lamongan",
+    name: "Soto Lamongan",
+    origin: "Lamongan",
+    shortDesc: "Soto berkuah gurih dengan koya khas Lamongan.",
+    history: "Berasal dari Lamongan, berkembang dari tradisi soto Jawa. Ciri khasnya adalah koya dan kuah kuning.",
+    ingredients: "Ayam, koya, rempah.",
+    image: "https://image.idn.media/post/20231128/img-20231129-075758-dedd399ca8b9dd63b98636b3b1ac0bf5.jpg",
+  },
+  {
+    id: "nasi_goreng_arang",
+    name: "Nasi Goreng Arang",
+    origin: "Kediri",
+    shortDesc: "Nasi goreng dimasak menggunakan arang dengan aroma smokey.",
+    history: "Versi tradisional nasi goreng Jawa yang dimasak dengan arang sejak zaman kolonial.",
+    ingredients: "Nasi, telur, ayam, bumbu.",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ40Lk-PSN0Uq03MDDUl_jw-3KYlzDOw8Oewn3y2RRAuw&s=10",
+  },
+  {
+    id: "sego_tempong",
+    name: "Sego Tempong",
+    origin: "Banyuwangi",
+    shortDesc: "Nasi dengan sambal pedas khas Banyuwangi.",
+    history: "Asal Banyuwangi. 'Tempong' berarti tampar, menggambarkan pedasnya.",
+    ingredients: "Nasi, sambal, ikan asin, lalapan.",
+    image: "https://asset.kompas.com/crops/VJmUeutUTA1nlELxQKaX-J0BVJc=/0x83:1000x750/1200x800/data/photo/2023/11/20/655aa53b16af4.jpeg",
+  },
+  {
+    id: "soto_probolinggo",
+    name: "Soto Probolinggo",
+    origin: "Probolinggo",
+    shortDesc: "Soto bening dengan suwiran daging khas Probolinggo.",
+    history: "Sudah dikenal sejak awal abad ke-20.",
+    ingredients: "Ayam/kerbau, rempah.",
+    image: "https://www.finnafood.com/blog/wp-content/uploads/2024/11/soto-kraksaan.webp",
+  },
+  {
+    id: "semanggi_surabaya",
+    name: "Semanggi Surabaya",
+    origin: "Surabaya",
+    shortDesc: "Daun semanggi rebus dengan bumbu kacang.",
+    history: "Hidangan tradisional Surabaya sejak masa pra-kolonial.",
+    ingredients: "Daun semanggi, petis.",
+    image: "https://porosinformatif.com/wp-content/uploads/2023/10/original_untitled-4399.jpg",
+  },
+  {
+    id: "lontong_balap",
+    name: "Lontong Balap",
+    origin: "Surabaya",
+    shortDesc: "Lontong dengan tauge dan lentho.",
+    history: "Muncul tahun 1910-an, dinamakan karena penjualnya saling balapan mendorong gerobak.",
+    ingredients: "Lontong, tauge, tahu, lentho.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/c/c0/20170125_105849283_Lontong_balap.jpg",
+  },
+  {
+    id: "bakso_malang",
+    name: "Bakso Malang",
+    origin: "Malang",
+    shortDesc: "Bakso khas Malang dengan isian lengkap.",
+    history: "Populer sejak era 1920-an, ciri khasnya banyak isian.",
+    ingredients: "Bakso, tahu, siomay, kuah.",
+    image: "https://blue.kumparan.com/image/upload/fl_progressive,fl_lossy,c_fill,f_auto,q_auto:best,w_640/v1512057252/BAKSO_bfku6s.jpg",
+  },
+  {
+    id: "tahu_tuna",
+    name: "Tahu Tuna",
+    origin: "Pacitan",
+    shortDesc: "Tahu isi tuna khas Pacitan.",
+    history: "Berasal dari daerah pesisir Pacitan yang kaya ikan tuna.",
+    ingredients: "Tahu, ikan tuna.",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROjqTyhZF8iB4Z6DrPVvc6rrd9R_AzMbp-3Oq60pnsVw&s=10",
+  },
+  {
+    id: "nasi_ampok",
+    name: "Nasi Ampok",
+    origin: "Blitar",
+    shortDesc: "Nasi jagung khas Blitar.",
+    history: "Makanan dari jagung tumbuk sejak masa paceklik era kolonial.",
+    ingredients: "Nasi jagung, sambal, sayur, ikan asin.",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnIcfJgaPtz-s8RBGuh3-eJkiQ6mdOrDV0xdjaNltlCYjQ9UY_RnCpabIv&s=10",
+  },
+  {
+    id: "wedang_cemue",
+    name: "Wedang Cemue",
+    origin: "Ngawi",
+    shortDesc: "Minuman hangat berisi roti dan kacang.",
+    history: "Populer abad ke-20 sebagai minuman pasar rakyat.",
+    ingredients: "Kuah santan, jahe, gula, roti tawar, kolang-kaling.",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-alLukGl4eKVzwuL3-tcCAL4kSlYTgaeoCQVeNbQn1RrKkyNp1d4Fnlc&s=10",
+  },
+  {
+    id: "lontong_kupang",
+    name: "Lontong Kupang",
+    origin: "Sidoarjo",
+    shortDesc: "Lontong dengan kupang kecil dan petis.",
+    history: "Sudah ada sejak era pelabuhan Sidoarjo ramai pada masa VOC.",
+    ingredients: "Lontong, kupang, petis, lentho.",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIBWJAZdQqwKWvHzlfSQs4NBQwDBmHOoRPMx-vH_ujgA&s=10",
+  },
+  {
+    id: "ledre_bojonegoro",
+    name: "Ledre",
+    origin: "Bojonegoro",
+    shortDesc: "Camilan tipis dari tepung beras dan pisang.",
+    history: "Camilan identik dengan Bojonegoro.",
+    ingredients: "Tepung beras, santan, pisang raja, gula.",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2IXYErhO_zwtYDc1ZvaeT18P_Jsna2eAhMVblVKyHkw&s=10",
+  },
+  {
+    id: "nasi_pecel_bojonegoro",
+    name: "Nasi Pecel Bojonegoro",
+    origin: "Bojonegoro",
+    shortDesc: "Nasi pecel dengan sayuran dan bumbu kacang.",
+    history: "Pecel berkembang luas di Jawa, termasuk Bojonegoro.",
+    ingredients: "Nasi, sayur, sambal kacang.",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7lIqWvcWJfutCq0yR-anveI5mCYESQBjlynTd4kZrO3N_jYH_rhgddL47&s=10",
+  },
+  {
+    id: "tape_singkong",
+    name: "Tape Singkong",
+    origin: "Bondowoso",
+    shortDesc: "Tape manis dari singkong fermentasi.",
+    history: "Berawal dari tradisi mengawetkan singkong dengan ragi.",
+    ingredients: "Singkong, ragi tape.",
+    image: "https://res.cloudinary.com/dk0z4ums3/image/upload/v1674095060/attached_image/7-manfaat-tape-singkong-untuk-kesehatan-yang-perlu-diketahui.jpg",
+  },
+  {
+    id: "nasi_mamong",
+    name: "Nasi Mamong",
+    origin: "Bondowoso",
+    shortDesc: "Nasi santan dengan rempah sebagai bekal perjalanan.",
+    history: "Berasal dari tradisi bekal perjalanan jauh masyarakat Bondowoso.",
+    ingredients: "Nasi, santan, serai, daun jeruk.",
+    image: "https://superapp.id/blog/wp-content/uploads/2024/04/bayu-syaits-pJe2Pl8LP_g-unsplash-e1713949497923.jpg",
+  },
+  {
+    id: "onde_kacang",
+    name: "Onde-onde Kacang Merah",
+    origin: "Jombang",
+    shortDesc: "Onde-onde berisi kacang merah manis.",
+    history: "Dibawa ke Jawa oleh pedagang Tionghoa sejak era Majapahit.",
+    ingredients: "Adonan onde-onde, kacang merah.",
+    image: "https://carica.id/wp-content/uploads/2022/01/Onde-ondeKacangMerah.jpg",
+  },
+  {
+    id: "sego_sadukan",
+    name: "Sego Sadukan",
+    origin: "Jombang",
+    shortDesc: "Nasi bungkus porsi kecil dengan lauk sederhana.",
+    history: "Namanya berarti 'nasi tendangan' karena porsinya kecil.",
+    ingredients: "Nasi, mie, tahu, telur, sambal.",
+    image: "https://cdn.yummy.co.id/content-images/images/20230613/q5ydofCABACf8JJHepCDWuPrdTL0KyEU-31363836363239393734d41d8cd98f00b204e9800998ecf8427e.jpg",
+  },
+  {
+    id: "tahu_takwa",
+    name: "Tahu Takwa",
+    origin: "Kediri",
+    shortDesc: "Tahu kuning khas Kediri.",
+    history: "Diyakini dipengaruhi teknik pembuatan tahu dari Tiongkok.",
+    ingredients: "Kedelai, air, garam, cuka.",
+    image: "https://assets-a1.kompasiana.com/items/album/2022/11/10/tahu-takwa-636cc4b717698352804ecb42.jpg",
+  },
+  {
+    id: "sego_kelor",
+    name: "Sego Kelor",
+    origin: "Lumajang",
+    shortDesc: "Nasi kelor berwarna hijau.",
+    history: "Nasi kelor berawal dari 'Nasi Gurih Kelor' yang pertama kali tampil di festival kuliner Lumajang tahun 2018.",
+    ingredients: "Nasi, daun kelor.",
+    image: "https://img-global.cpcdn.com/recipes/d32f0031575cb156/680x781cq80/nasi-hijau-daun-kelor-foto-resep-utama.jpg",
+  },
+  {
+    id: "nasi_becek",
+    name: "Nasi Becek",
+    origin: "Nganjuk",
+    shortDesc: "Nasi kuah gulai kambing khas Nganjuk.",
+    history: "Berasal dari kebiasaan menuangkan kuah gulai ke atas nasi.",
+    ingredients: "Nasi, kuah gulai kambing.",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQB2wOY50q-2U1hnotPFMTO7FXhiLx9vk5vOvdk0b4J6pmY3kMCVCPEHWs&s=10",
+  },
+  {
+    id: "dodol_dumbleg",
+    name: "Dumbleg",
+    origin: "Nganjuk",
+    shortDesc: "Jajanan tradisional dari tepung beras dan gula merah.",
+    history: "Diperkirakan muncul abad ke-15 hingga 16 di Jawa.",
+    ingredients: "Tepung beras/ketan, santan, gula merah.",
+    image: "https://ik.imagekit.io/goodid/gnfi/uploads/articles/large-ghfhkh-561a5b440e3c172a01642a83b89f510b.jpg",
+  },
+  {
+    id: "kupang_kraton",
+    name: "Kupang Kraton",
+    origin: "Pasuruan",
+    shortDesc: "Kupang kecil dengan lontong dan petis.",
+    history: "Berawal dari kebiasaan masyarakat pesisir memanfaatkan kupang.",
+    ingredients: "Lontong, kupang, petis, lentho.",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkqhJMbAX8fAcov8HQ-uGrjNM6G9Fnq-CrJ54GNf1pbdl-3lA1GdCeU5c&s=10",
+  },
+{
+    id: "cakee_sumenep",
+    name: "Cakee Madura",
+    origin: "Sumenep",
+    shortDesc: "Cakee di Madura adalah menu berkuah kental dan berisi aneka sayuran, mirip capcay",
+    history: "Cake khas Madura, khususnya yang berasal dari Sumenep, merupakan hasil persilangan budaya Eropa dan Tiongkok.",
+    ingredients: "sayuran, kuah, lidah sapi, irisan ayam",
+    image:"https://static.promediateknologi.id/crop/0x0:0x0/0x0/webp/photo/p2/74/2024/03/17/Cake-Sumenep-370563266.jpg",
+},
+{
+    id: "kaldu_kokot",
+    name: "Kaldu Kokot",
+    origin: "Sumenep",
+    shortDesc: "Kaldu kokot adalah kuliner khas Madura yang terbuat dari rebusan kikil atau kaki sapi yang empuk",
+    history: "Dimulai tahun 1962, Ibu Nakiyah menciptakan kaldu kokot karena ia merasa orang Madura tidak menyukai masakan manis.",
+    ingredients: "rebusan kikil sapi, kacang hijau dan rempah-rempah",
+    image:"https://asset.kompas.com/crops/-qoN4eznnsrVZjMOvDko71ZWeTw=/0x18:1200x818/1200x800/data/photo/2021/08/21/6120cec66d3ee.jpg",
+},
+{
+    id: "sate_tulungagung",
+    name: "Sate Bandeng Tulungagung",
+    origin: "Tulungagung",
+    shortDesc: "Ikan bandeng yang dibumbui rempah, dilumatkan sampai durinya hilang, lalu dibakar hingga aromanya gurih.",
+    history: "Berasal dari tradisi masyarakat pesisir Tulungagung yang melunakkan bandeng agar mudah dimakan dan dijadikan oleh-oleh.",
+    ingredients: "Ikan bandeng, bawang putih, bawang merah, ketumbar, kunyit, garam, gula, dan minyak.",
+    image:"https://asset.kompas.com/crops/SPmMmOpmHkfwbx6qol47J0b1FGM=/3x0:700x465/1200x800/data/photo/2021/02/16/602b2a91ca7f1.jpg",
+},
+{
+    id: "ayam_lodho",
+    name: "Ayam Lodho",
+    origin: "Tulungagung",
+    shortDesc: "Ayam lodho adalah masakan khas Jawa Timur, terutama dari daerah Tulungagung dan Trenggalek, yang terbuat dari ayam kampung yang dibakar atau dipanggang terlebih dahulu, lalu dimasak lagi dalam kuah santan kental bercita rasa pedas gurih.",
+    history: "Berasal dari Jawa Timur, khususnya Tulungagung dan Trenggalek. ",
+    ingredients: "Ayam, santan, bawang merah,bawang putih dan rempah lainya",
+    image:"https://assets.unileversolutions.com/recipes-v2/257398.jpg",
+},
+{
+    id: "sate_magetan",
+    name: "Sate Kelinci",
+    origin: "Magetan",
+    shortDesc: "Sate dari daging kelinci yang dibakar dan disajikan dengan bumbu kacang atau kecap pedas.",
+    history: "Berasal dari daerah pegunungan Magetan sebagai olahan peternak kelinci, lalu populer di sekitar Telaga Sarangan",
+    ingredients: "Daging kelinci, kecap, bawang, ketumbar, cabai, kacang tanah.",
+    image:"https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2023/07/14053934/Mudah-Dibuat-di-Rumah-Ini-Resep-Sate-Ayam-Bumbu-Kacang-yang-Lezat-.jpg.webp",
+},
+{
+    id: "nasi_jember",
+    name: "Nasi Langgi Jember",
+    origin: "Jember",
+    shortDesc: "Nasi gurih yang disajikan dengan berbagai lauk seperti abon, sambal goreng, orek tempe, telur, dan bawang goreng. Rasanya kaya dan aromanya khas karena menggunakan bumbu rempah Jawa.",
+    history: "Hidangan ini berasal dari tradisi masakan Jawa rumahan yang kemudian diadaptasi dan populer sebagai menu khas di berbagai warung makan Jember.",
+    ingredients: "Nasi gurih, abon sapi, telur, sambal goreng, orek tempe, bawang goreng.",
+    image:"https://tradisikuliner.com/wp-content/uploads/2025/04/nasi-langgi-rm-seroja.jpg",
+},
+{
+    id: "onde_jomokerto",
+    name: "Onde-onde Mojokerto",
+    origin: "Mojokerto",
+    shortDesc: "Kue bulat berbalut wijen dengan kulit kenyal dan isian kacang hijau manis. Teksturnya lembut di dalam dan renyah di luar.",
+    history: "Sudah menjadi ikon kuliner Mojokerto sejak masa kerajaan Majapahit dan dikenal sebagai salah satu oleh-oleh paling khas kota tersebut.",
+    ingredients: "Tepung ketan, kacang hijau, gula, air, dan biji wijen.",
+    image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7fuzZtIldmlb40xv2wCmGFsUCbGkkqJ66rtOaDufA9XKfb3al6qTtGkc&s=10",
+},
+{
+    id: "pecel_gudeg",
+    name: "Pecel Gudeg",
+    origin: "Jember",
+    shortDesc: "Pecel gudeg adalah kombinasi unik dari dua makanan khas Jawa, yaitu pecel dan gudeg, yang populer di daerah Jember, Jawa Timur",
+    history: "Pecel gudeg mulai dikenal setelah usaha 'Gudeg Pecel Lumintu' berdiri di Jember pada tahun 1975.",
+    ingredients: "sambal kacang, sayuran, gudeg, ",
+    image:"https://assets.pikiran-rakyat.com/crop/226x72:1151x613/720x0/webp/photo/2025/08/08/3505969190.png",
+},
+{
+    id: "sate_meduro",
+    name: "Sate Madura Pamekasan",
+    origin: "Pamekasan",
+    shortDesc: "Sate ayam berbumbu kacang kental yang gurih-manis, dibakar dengan arang hingga aromanya khas dan rasanya kuat.",
+    history: "Berasal dari tradisi kuliner Pamekasan dan menjadi salah satu sate paling terkenal di Indonesia karena cita rasa bumbunya yang khas.",
+    ingredients: "Daging ayam, kacang tanah, kecap manis, bawang, cabai, gula merah, garam.",
+    image:"https://asset.kompas.com/crops/zekDoITPKTJmLawnP6e3a5E4t50=/3x0:700x465/1200x800/data/photo/2024/07/08/668b52974ead4.jpg",
+},
+{
+    id: "sate_sampang",
+    name: "Sate Ayam Sampang",
+    origin: "Sampang",
+    shortDesc: "Sate ayam khas Sampang dengan potongan kecil yang dibakar hingga harum, disajikan dengan bumbu kacang yang lebih kental, gurih, dan sedikit pedas dibandingkan daerah Madura lainnya.",
+    history: "Berasal dari tradisi kuliner masyarakat Sampang yang terkenal piawai meracik bumbu kacang dan teknik bakaran arang, sehingga menghasilkan cita rasa kuat dan berbeda dari sate Madura lainnya.",
+    ingredients: "Daging ayam, kacang tanah, kecap manis, bawang putih, bawang merah, cabai, gula merah, garam.",
+    image:"https://i.gojekapi.com/darkroom/gofood-indonesia/v2/images/uploads/7b247c96-5e1a-426d-91de-905a9730992e_Go-Biz_20230530_120214.jpeg",
+},
+{
+    id: "nasi_sodu",
+    name: "Nasi Sodu",
+    origin: "Situbondo",
+    shortDesc: "kuliner khas daerah Situbondo, Jawa Timur, yang terdiri dari nasi putih disiram kuah santan kental.",
+    history: "Nasi sodu berasal dari tradisi pedesaan di Situbondo, Jawa Timur, dan memiliki filosofi kesederhanaan serta kebersamaan",
+    ingredients: "Nasi, kuah, ikan tongkol, sayuran, sambal",
+    image:"https://awsimages.detik.net.id/community/media/visual/2022/02/03/nasi-sodu-1_169.jpeg?w=1200",
+},
+{
+    id: "sego_jiagong",
+    name: "Nasi Jagung Trenggalek",
+    origin: "Trenggalek",
+    shortDesc: "Nasi campuran jagung pipil yang dimasak hingga pulen, disajikan dengan lauk sederhana seperti urap, ikan asin, atau sambal. Rasanya gurih, mengenyangkan, dan khas pedesaan.",
+    history: "Dulunya merupakan makanan pokok masyarakat Trenggalek saat beras sulit didapat, kemudian menjadi kuliner tradisional yang masih populer hingga sekarang.",
+    ingredients: "Jagung pipil, beras, garam, serta lauk pendamping seperti urap sayur atau ikan asin.",
+    image:"https://bisnisukm.com/uploads/2019/11/mau-bisnis-jagung-cobain-deh-bikin-kuliner-tradisional-nasi-jagung-720x415.jpg",
+},
+{
+    id: "ayam_udho",
+    name: "Ayam Lodho Trenggalek",
+    origin: "Trenggalek",
+    shortDesc: "Ayam lodho adalah masakan khas Jawa Timur, terutama dari daerah Tulungagung dan Trenggalek, yang terbuat dari ayam kampung yang dibakar atau dipanggang terlebih dahulu, lalu dimasak lagi dalam kuah santan kental bercita rasa pedas gurih.",
+    history: "Berasal dari Jawa Timur, khususnya Tulungagung dan Trenggalek. ",
+    ingredients: "Ayam, santan, bawang merah,bawang putih dan rempah lainya",
+    image:"https://www.finnafood.com/blog/wp-content/uploads/2023/09/13.-Cara-Buat-Ayam-Lodho-Kuah-Kental-Sambal-Rawit.jpg",
+},
+{
+    id: "nasi_krawu",
+    name: "Nasi Krawu",
+    origin: "Gresik",
+    shortDesc: "Nasi Krawu adalah makanan khas Gresik berisi nasi pulen dengan suwiran daging sapi, jeroan, serundeng, dan sambal pedas. Rasanya gurih, manis, dan pedas khas Madura.",
+    history: "Nasi ini muncul dari pengaruh budaya Madura di Gresik sejak masa perdagangan, awalnya dijual oleh ibu-ibu Madura secara keliling dengan bungkus daun pisang.",
+    ingredients: "Nasi pulen, daging sapi, jeroan, serundeng kelapa, bawang merah, bawang putih, cabai, gula, dan garam.",
+    image:"https://asset.kompas.com/crops/KQquHuLMOZXof42iGHE8dWADl8c=/0x5:1000x672/1200x800/data/photo/2023/08/11/64d58bed6c722.jpeg",
+},
+{
+    id: "rujak_petis",
+    name: "Rujak Petis",
+    origin: "Tuban",
+    shortDesc: "Rujak Petis Tuban adalah rujak khas yang berisi irisan buah segar, sayuran rebus, dan lontong, lalu disiram bumbu kacang yang dicampur petis udang khas Tuban. Rasanya manis, asam, pedas, dan gurih.",
+    history: "Hidangan ini berkembang di wilayah pesisir Tuban yang terkenal sebagai penghasil petis udang, sehingga rujaknya memiliki cita rasa kuat dan berbeda dari rujak daerah lain.",
+    ingredients: "Buah-buahan (seperti bengkuang, mangga muda, timun), sayuran, kacang tanah, cabai, gula merah, petis udang, garam, dan lontong",
+    image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4W0xrQDw3a7C-7ITfnxQBW2PMY3pa7i8MAFTFxg5paolS76pv1Nk8hQWZ&s=10",
+},
+];
+
+// build city lookup and select options (include all towns in 'towns' and those that appear as origin in foods)
+const citySet = new Map();
+towns.forEach(t=> citySet.set(t.name, {lat:t.lat, lon:t.lon}));
+foods.forEach(f=> { if(!citySet.has(f.origin)){ citySet.set(f.origin, {lat:null, lon:null}); } });
+
+// Populate select with cities sorted
+const cityNames = Array.from(citySet.keys()).sort((a,b)=> a.localeCompare(b,'id'));
+const citySelect = document.getElementById('citySelect');
+cityNames.forEach(name=>{
+  const opt = document.createElement('option');
+  opt.value = name;
+  opt.textContent = name;
+  citySelect.appendChild(opt);
+});
+
+const searchCity = document.getElementById('searchCity');
+searchCity.addEventListener('input', e=>{
+  const q = e.target.value.trim().toLowerCase();
+  for(const opt of citySelect.options){
+    opt.hidden = q && !opt.text.toLowerCase().includes(q);
+  }
+});
+
+// Haversine distance
+function distanceKm(lat1, lon1, lat2, lon2){
+  if(lat2==null || lon2==null) return Infinity;
+  const toRad = v => v * Math.PI/180;
+  const R = 6371;
+  const dLat = toRad(lat2-lat1);
+  const dLon = toRad(lon2-lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+  const c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R*c;
+}
+
+// find nearest town entry for a given lat/lon
+function nearestTown(lat, lon){
+  let best = null; let bestD = Infinity;
+  for(const [name,coord] of citySet.entries()){
+    if(coord.lat == null || coord.lon==null) continue;
+    const d = distanceKm(lat, lon, coord.lat, coord.lon);
+    if(d < bestD){ bestD = d; best = {name,lat:coord.lat,lon:coord.lon,dist: d}; }
+  }
+  return { nearest: best, distanceKm: bestD };
+}
+
+// render cards for given city name (show foods whose origin matches city, or if none, show nearby cities' foods)
+const cardsEl = document.getElementById('cards');
+const statusEl = document.getElementById('status');
+const resultsInfo = document.getElementById('resultsInfo');
+
+function clearCards(){ cardsEl.innerHTML = ''; }
+
+function showFoodsForCity(cityName, extra){
+  clearCards();
+  resultsInfo.textContent = '';
+  const matched = foods.filter(f => f.origin.toLowerCase() === cityName.toLowerCase());
+  if(matched.length){
+    resultsInfo.textContent = `Rekomendasi untuk kota ${cityName}: ${matched.length} item.`;
+    matched.forEach(f => renderFoodCard(f, cityName));
+  } else {
+    // fallback: show nearest foods from town list (by distance to city coords if available)
+    const coord = citySet.get(cityName);
+    if(coord && coord.lat != null){
+      // compute distance from this city to each food's origin if origin coord exists
+      const candidates = foods.map(f=>{
+        const originCoord = citySet.get(f.origin);
+        const d = originCoord && originCoord.lat!=null ? distanceKm(coord.lat, coord.lon, originCoord.lat, originCoord.lon) : Infinity;
+        return {...f, dist: d};
+      }).sort((a,b)=>a.dist-b.dist).slice(0,6);
+      resultsInfo.textContent = `Tidak ada makanan yang tercatat tepat dari ${cityName}; menampilkan makanan terdekat berdasarkan kota terdaftar.`;
+      candidates.forEach(f=> renderFoodCard(f, f.origin, f.dist));
+    } else {
+      // show general popular foods
+      resultsInfo.textContent = `Tidak ada data lokasi untuk ${cityName}. Menampilkan sejumlah makanan populer Jawa Timur.`;
+      foods.slice(0,8).forEach(f => renderFoodCard(f,f.origin));
+    }
+  }
+}
+
+function renderFoodCard(f, originDisplay, distKm){
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="tag">${originDisplay}</div>
+    <img src="${f.image}" alt="${f.name}">
+    <h3>${f.name}</h3>
+    <div class="meta">Asal: ${f.origin}${typeof distKm==='number' && isFinite(distKm) ? ' • '+distKm.toFixed(1)+' km' : ''}</div>
+    <div class="desc">${f.shortDesc}</div>
+    <div class="actions">
+      <div style="font-size:13px;color:var(--muted)">Klik untuk detail</div>
+      <div>
+        <button class="btn viewBtn" data-id="${f.id}">Lihat</button>
+      </div>
+    </div>
+  `;
+  cardsEl.appendChild(card);
+}
+
+// modal handling
+const modal = document.getElementById('modalBackdrop');
+const modalTitle = document.getElementById('modalTitle');
+const modalSub = document.getElementById('modalSub');
+const modalImage = document.getElementById('modalImage');
+const modalDesc = document.getElementById('modalDesc');
+const modalHistory = document.getElementById('modalHistory');
+const modalIngredients = document.getElementById('modalIngredients');
+const modalQuick = document.getElementById('modalQuick');
+document.addEventListener('click', (e)=>{
+  if(e.target.matches('.viewBtn')){
+    const id = e.target.dataset.id;
+    const f = foods.find(x=>x.id===id);
+    if(!f) return;
+    modalTitle.textContent = f.name;
+    modalSub.textContent = `Asal: ${f.origin}`;
+    modalImage.src = f.image;
+    modalImage.alt = f.name;
+    modalDesc.textContent = f.shortDesc;
+    modalHistory.textContent = f.history;
+    modalIngredients.textContent = f.ingredients;
+    modalQuick.innerHTML = `<strong>${f.origin}</strong><br>Rujukan lokal & resep turun-temurun.`;
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden','false');
+  }
+});
+document.getElementById('closeModal').addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
+modal.addEventListener('click',(e)=>{ if(e.target === modal) { modal.style.display='none'; modal.setAttribute('aria-hidden','true'); } });
+
+// detect location button
+const detectBtn = document.getElementById('detectBtn');
+const nearBtn = document.getElementById('nearBtn');
+let lastDetected = null;
+
+detectBtn.addEventListener('click', ()=>{
+  if(!navigator.geolocation){
+    statusEl.textContent = "Geolocation tidak tersedia pada perangkat ini.";
+    return;
+  }
+  statusEl.textContent = "Mencoba mendeteksi lokasi... (browser akan meminta izin)";
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      lastDetected = {lat,lon, timestamp: new Date()};
+      const nearest = nearestTown(lat, lon);
+      if(nearest.nearest){
+        statusEl.innerHTML = `Lokasi terdeteksi: lat ${lat.toFixed(4)}, lon ${lon.toFixed(4)} • Kota terdekat: <strong>${nearest.nearest.name}</strong> (${nearest.nearest.dist.toFixed(1)} km).`;
+        // show foods from nearest town
+        showFoodsForCity(nearest.nearest.name);
+        // pre-select nearest in dropdown if available
+        if(citySet.has(nearest.nearest.name)) citySelect.value = nearest.nearest.name;
+      } else {
+        statusEl.textContent = `Lokasi terdeteksi: lat ${lat.toFixed(4)}, lon ${lon.toFixed(4)} — namun tidak ditemukan kota terdaftar terdekat. Silakan pilih kota secara manual.`;
+      }
+    },
+    err => {
+      statusEl.textContent = `Gagal mendeteksi lokasi: ${err.message}. Pastikan kamu izinkan akses lokasi dan menggunakan HTTPS.`;
+    },
+    { enableHighAccuracy: false, maximumAge: 60*1000, timeout: 20000 }
+  );
+});
+
+// show nearest based on lastDetected
+nearBtn.addEventListener('click', ()=>{
+  if(!lastDetected){
+    statusEl.textContent = "Belum ada lokasi terdeteksi — klik 'Deteksi Lokasi Sekarang' dulu.";
+    return;
+  }
+  const nearest = nearestTown(lastDetected.lat, lastDetected.lon);
+  if(nearest.nearest){
+    showFoodsForCity(nearest.nearest.name);
+    statusEl.innerHTML = `Menampilkan rekomendasi untuk kota terdekat: <strong>${nearest.nearest.name}</strong> (${nearest.nearest.dist.toFixed(1)} km).`;
+  } else {
+    statusEl.textContent = "Tidak ditemukan kota terdekat yang terdaftar.";
+  }
+});
+
+// when user selects a city manually
+citySelect.addEventListener('change', e=>{
+  const name = e.target.value;
+  if(!name) return;
+  showFoodsForCity(name);
+  statusEl.textContent = `Menampilkan hasil untuk ${name}.`;
+});
+
+// keyboard enter on search triggers city selection if exact match
+searchCity.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter'){
+    const q = e.target.value.trim();
+    if(!q) return;
+    // try to find exact or best match
+    const match = cityNames.find(c=> c.toLowerCase() === q.toLowerCase()) || cityNames.find(c=> c.toLowerCase().includes(q.toLowerCase()));
+    if(match){
+      citySelect.value = match;
+      showFoodsForCity(match);
+      statusEl.textContent = `Menampilkan hasil untuk ${match}.`;
+    } else {
+      // if no match, try fuzzy: find nearest town by name partial
+      const partial = cityNames.find(c=> c.toLowerCase().includes(q.toLowerCase()));
+      if(partial){
+        citySelect.value = partial;
+        showFoodsForCity(partial);
+        statusEl.textContent = `Menampilkan hasil untuk ${partial}.`;
+      } else {
+        statusEl.textContent = `Kota "${q}" tidak ditemukan pada data — coba eja lain atau pilih dari daftar.`;
+      }
+    }
+  }
+});
+
+// initial render: show ALL foods on first load
+(function init(){
+  clearCards();
+  resultsInfo.textContent = "Semua makanan khas Jawa Timur. Klik 'Deteksi Lokasi Sekarang' untuk rekomendasi lokal.";
+  foods.forEach(f => renderFoodCard(f, f.origin));
+})();
+
+</script>
+</body>
+</html>
